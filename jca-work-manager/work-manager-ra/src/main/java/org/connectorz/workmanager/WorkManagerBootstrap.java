@@ -21,8 +21,7 @@ import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
 /**
- *
- * @author adam bien, blog.adam-bien.com
+ * @author adam bien, adam-bien.com
  */
 @Connector(reauthenticationSupport = false,
 transactionSupport = TransactionSupport.TransactionSupportLevel.NoTransaction)

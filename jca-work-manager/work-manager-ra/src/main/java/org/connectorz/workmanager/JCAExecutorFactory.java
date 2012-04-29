@@ -20,7 +20,9 @@ import javax.naming.Reference;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
-
+/**
+ * @author adam bien, adam-bien.com
+ */
 public class JCAExecutorFactory
         implements WorkExecutorFactory {
 

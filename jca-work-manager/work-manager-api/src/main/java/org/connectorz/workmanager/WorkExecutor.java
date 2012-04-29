@@ -18,7 +18,21 @@ package org.connectorz.workmanager;
 import java.util.concurrent.Executor;
 
 /**
- *
+ * Sample usage:
+ <pre>
+ *   <b>&#064;Resource(name="jca/workmanager")</b>
+    WorkExecutorFactory executorFactory;
+    
+    public String threads(){
+        try(WorkExecutor executor = executorFactory.newExecutor();){
+        Runnable runnable = new Runnable(){
+            &#064;Override
+            public void run() {
+            //some work to do
+            }
+        };
+        executor.execute(runnable);
+ * </pre>
  * @author adam bien, adam-bien.com
  */
 public interface WorkExecutor extends Executor,AutoCloseable{

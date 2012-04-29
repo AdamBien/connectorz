@@ -19,8 +19,12 @@ import java.io.Serializable;
 import javax.resource.Referenceable;
 
 /**
- *
- * @author adam-bien.com
+ * Should be injected with:
+ * <pre>
+ *     &#064;Resource(name="CONFIGURED_JNDI_NAME")
+ *     WorkExecutorFactory executorFactory;
+ * </pre>
+ * @author adam bien, adam-bien.com
  */
 public interface WorkExecutorFactory extends Serializable, Referenceable {
     public WorkExecutor newExecutor();

@@ -25,7 +25,9 @@ import javax.resource.spi.*;
 import javax.resource.spi.work.WorkManager;
 import javax.security.auth.Subject;
 import javax.validation.constraints.Size;
-
+/**
+ * @author adam bien, adam-bien.com
+ */
 @ConnectionDefinition(connectionFactory = WorkExecutorFactory.class,
 connectionFactoryImpl = JCAExecutorFactory.class,
 connection = Executor.class,

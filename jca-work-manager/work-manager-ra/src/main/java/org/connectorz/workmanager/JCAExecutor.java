@@ -19,7 +19,9 @@ import java.io.PrintWriter;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
-
+/**
+ * @author adam bien, adam-bien.com
+ */
 public class JCAExecutor implements WorkExecutor{
 
     private ConnectionRequestInfo connectionRequestInfo;

@@ -23,7 +23,10 @@ import static javax.resource.spi.ConnectionEvent.*;
 import javax.resource.spi.*;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
-
+/**
+ *
+ * @author adam bien, adam-bien.com
+ */
 public class Connection
         implements ManagedConnection {
 
