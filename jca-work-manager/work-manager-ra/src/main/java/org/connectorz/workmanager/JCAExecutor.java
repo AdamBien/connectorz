@@ -40,10 +40,6 @@ public class JCAExecutor implements WorkExecutor{
         out.println("#JCAWorkExecutor.close");
         this.genericManagedConnection.close();
     }
-
-    public void destroy() {
-        out.println("#JCAWorkExecutor.cleanup");
-    }
     
     @Override
     public void execute(final Runnable runnable) {

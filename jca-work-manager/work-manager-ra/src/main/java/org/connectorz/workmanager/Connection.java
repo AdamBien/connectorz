@@ -52,7 +52,6 @@ public class Connection
     @Override
     public void destroy() {
         out.println("#Connection.destroy");
-        this.executorConnection.destroy();
     }
 
     @Override
