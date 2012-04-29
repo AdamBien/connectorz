@@ -29,53 +29,60 @@ public class Connection
 
     private ConnectionFactory mcf;
     private PrintWriter out;
-    private JCAExecutor fileConnection;
+    private JCAExecutor executorConnection;
     private ConnectionRequestInfo connectionRequestInfo;
     private List<ConnectionEventListener> listeners;
 
     Connection(PrintWriter out,ConnectionFactory mcf, ConnectionRequestInfo connectionRequestInfo) {
         this.out = out;
-        out.println("#GenericManagedConnection");
+        out.println("#Connection");
         this.mcf = mcf;
         this.connectionRequestInfo = connectionRequestInfo;
-        this.listeners = new LinkedList<ConnectionEventListener>();
+        this.listeners = new LinkedList<>();
     }
 
+    @Override
     public Object getConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
-        out.println("#GenericManagedConnection.getConnection");
-        fileConnection = new JCAExecutor(out,this,mcf, connectionRequestInfo);
-        return fileConnection;
+        out.println("#Connection.getConnection");
+        executorConnection = new JCAExecutor(out,this,mcf, connectionRequestInfo);
+        return executorConnection;
     }
 
+    @Override
     public void destroy() {
-        out.println("#GenericManagedConnection.destroy");
-        this.fileConnection.destroy();
+        out.println("#Connection.destroy");
+        this.executorConnection.destroy();
     }
 
+    @Override
     public void cleanup() {
-        out.println("#GenericManagedConnection.cleanup");
+        out.println("#Connection.cleanup");
     }
 
+    @Override
     public void associateConnection(Object connection) {
-        out.println("#GenericManagedConnection.associateConnection " + connection);
-        this.fileConnection = (JCAExecutor) connection;
+        out.println("#Connection.associateConnection " + connection);
+        this.executorConnection = (JCAExecutor) connection;
 
     }
 
+    @Override
     public void addConnectionEventListener(ConnectionEventListener listener) {
-        out.println("#GenericManagedConnection.addConnectionEventListener");
+        out.println("#Connection.addConnectionEventListener");
         this.listeners.add(listener);
     }
 
+    @Override
     public void removeConnectionEventListener(ConnectionEventListener listener) {
-        out.println("#GenericManagedConnection.removeConnectionEventListener");
+        out.println("#Connection.removeConnectionEventListener");
         this.listeners.remove(listener);
     }
 
+    @Override
     public XAResource getXAResource()
             throws ResourceException {
-        out.println("#GenericManagedConnection.getXAResource");
+        out.println("#Connection.getXAResource");
         return null;
     }
 
@@ -84,26 +91,26 @@ public class Connection
     @Override
     public ManagedConnectionMetaData getMetaData()
             throws ResourceException {
-        out.println("#GenericManagedConnection.getMetaData");
+        out.println("#Connection.getMetaData");
         return new ManagedConnectionMetaData() {
 
             public String getEISProductName()
                     throws ResourceException {
-                out.println("#GenericManagedConnection.getEISProductName");
+                out.println("#Connection.getEISProductName");
                 return "Work Manager JCA";
             }
 
             @Override
             public String getEISProductVersion()
                     throws ResourceException {
-                out.println("#GenericManagedConnection.getEISProductVersion");
+                out.println("#Connection.getEISProductVersion");
                 return "1.0";
             }
 
             @Override
             public int getMaxConnections()
                     throws ResourceException {
-                out.println("#GenericManagedConnection.getMaxConnections");
+                out.println("#Connection.getMaxConnections");
                 return mcf.getMaxNumberOfConcurrentRequests();
             }
 
@@ -117,14 +124,14 @@ public class Connection
     @Override
     public void setLogWriter(PrintWriter out)
             throws ResourceException {
-        System.out.println("#GenericManagedConnection.setLogWriter");
+        System.out.println("#Connection.setLogWriter");
         this.out = out;
     }
 
     @Override
     public PrintWriter getLogWriter()
             throws ResourceException {
-        System.out.println("#GenericManagedConnection.getLogWriter");
+        System.out.println("#Connection.getLogWriter");
         return out;
     }
     
@@ -158,7 +165,7 @@ public class Connection
 
     public void fireConnectionEvent(int event) {
         ConnectionEvent connnectionEvent = new ConnectionEvent(this, event);
-        connnectionEvent.setConnectionHandle(this.fileConnection);
+        connnectionEvent.setConnectionHandle(this.executorConnection);
         for (ConnectionEventListener listener : this.listeners) {
             switch (event) {
                 case LOCAL_TRANSACTION_STARTED:
