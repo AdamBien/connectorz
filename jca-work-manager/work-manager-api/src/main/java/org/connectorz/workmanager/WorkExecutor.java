@@ -20,7 +20,11 @@ import java.util.concurrent.Executor;
 /**
  * Sample usage:
  <pre>
- *   <b>&#064;Resource(name="jca/workmanager")</b>
+&#064;Stateless
+&#064;TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+public class ThreadsResource {
+
+    <b>&#064;Resource(name="jca/workmanager")</b>
     WorkExecutorFactory executorFactory;
     
     public String threads(){
@@ -32,7 +36,9 @@ import java.util.concurrent.Executor;
             }
         };
         executor.execute(runnable);
+  }
  * </pre>
+ * 
  * @author adam bien, adam-bien.com
  */
 public interface WorkExecutor extends Executor,AutoCloseable{
