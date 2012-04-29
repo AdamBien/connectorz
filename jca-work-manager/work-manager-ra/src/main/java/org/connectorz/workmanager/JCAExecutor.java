@@ -15,14 +15,12 @@ limitations under the License.
 */
 package org.connectorz.workmanager;
 
-import java.io.Closeable;
 import java.io.PrintWriter;
-import java.util.concurrent.Executor;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
 
-public class JCAExecutor implements Executor,Closeable{
+public class JCAExecutor implements WorkExecutor{
 
     private ConnectionRequestInfo connectionRequestInfo;
     private Connection genericManagedConnection;

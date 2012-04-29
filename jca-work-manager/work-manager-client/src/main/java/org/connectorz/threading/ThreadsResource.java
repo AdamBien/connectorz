@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.connectorz.workmanager.WorkExecutor;
 import org.connectorz.workmanager.WorkExecutorFactory;
 
 /**
@@ -45,7 +46,7 @@ public class ThreadsResource {
     
     @GET
     public String threads(){
-        Executor executor = executorFactory.newExecutor();
+        try(WorkExecutor executor = executorFactory.newExecutor();){
         Runnable runnable = new Runnable(){
 
             @Override
@@ -55,6 +56,8 @@ public class ThreadsResource {
         
         };
         executor.execute(runnable);
+        }
+        
         return "Done";
     }
 

@@ -15,13 +15,13 @@ limitations under the License.
 */
 package org.connectorz.workmanager;
 
-import java.io.Serializable;
-import javax.resource.Referenceable;
+import java.util.concurrent.Executor;
 
 /**
  *
- * @author adam-bien.com
+ * @author adam bien, adam-bien.com
  */
-public interface WorkExecutorFactory extends Serializable, Referenceable {
-    public WorkExecutor newExecutor();
+public interface WorkExecutor extends Executor,AutoCloseable{
+    @Override
+    void close();
 }
