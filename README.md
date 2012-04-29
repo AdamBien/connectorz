@@ -1,9 +1,9 @@
-connectorz
+[connectorZ](http://connectorz.adam-bien.com)
 ==========
 
 JCA 1.6 Connectors. As Simple As Possible.
 
-1. Work Manager: JCA implementation of java.util.concurrent.Executor
+1. [Work Manager](http://connectorz.adam-bien.com): JCA implementation of java.util.concurrent.Executor
 
 
 Copyright 2012 Adam Bien, adam-bien.com
