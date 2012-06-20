@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.logging.Logger;
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
 import javax.resource.spi.work.WorkManager;
@@ -35,13 +36,16 @@ connectionImpl = JCAExecutor.class)
 public class ConnectionFactory
         implements ManagedConnectionFactory, ResourceAdapterAssociation, Serializable {
 
+    private final Logger logger = Logger.getLogger("connectorz#jca-work-manager");
+    private LogWriter log;
     private PrintWriter out;
     private WorkManagerBootstrap workManagerAdapter;
     private int maxNumberOfConcurrentRequests;
+    
 
     public ConnectionFactory() {
-        out = new PrintWriter(System.out);
-        out.println("#ConnectionFactory.constructor");
+        log = new LogWriter(logger);
+        log.println("#ConnectionFactory.constructor");
     }
 
     @Size(min = 1)
@@ -56,26 +60,26 @@ public class ConnectionFactory
 
     @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
-        out.println("#ConnectionFactory.createConnectionFactory,1");
-        return new JCAExecutorFactory(out, this, cxManager);
+        log.println("#ConnectionFactory.createConnectionFactory,1");
+        return new JCAExecutorFactory(log, this, cxManager);
     }
 
     @Override
     public Object createConnectionFactory() throws ResourceException {
-        out.println("#ConnectionFactory.createManagedFactory,2");
-        return new JCAExecutorFactory(out, this, null);
+        log.println("#ConnectionFactory.createManagedFactory,2");
+        return new JCAExecutorFactory(log, this, null);
     }
 
     @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo info) {
-        out.println("#ConnectionFactory.createManagedConnection");
-        return new Connection(out, this, info);
+        log.println("#ConnectionFactory.createManagedConnection");
+        return new Connection(log, this, info);
     }
 
     @Override
     public ManagedConnection matchManagedConnections(Set connectionSet, Subject subject, ConnectionRequestInfo info)
             throws ResourceException {
-        out.println("#ConnectionFactory.matchManagedConnections Subject " + subject + " Info: " + info);
+        log.println("#ConnectionFactory.matchManagedConnections Subject " + subject + " Info: " + info);
         for (Iterator it = connectionSet.iterator(); it.hasNext();) {
             Object object = it.next();
             if (object instanceof Connection) {
@@ -85,7 +89,7 @@ public class ConnectionFactory
                     return gmc;
                 }
             }else{
-                out.println("#ConnectionFactory.matchManagedConnections " + object + " is not a Connection");
+                log.println("#ConnectionFactory.matchManagedConnections " + object + " is not a Connection");
             }
         }
         return null;
@@ -99,7 +103,7 @@ public class ConnectionFactory
 
     @Override
     public PrintWriter getLogWriter() throws ResourceException {
-        out.println("#ConnectionFactory.getLogWriter");
+        log.println("#ConnectionFactory.getLogWriter");
         return this.out;
     }
 

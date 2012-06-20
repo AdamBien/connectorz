@@ -15,7 +15,6 @@ limitations under the License.
 */
 package org.connectorz.workmanager;
 
-import java.io.PrintWriter;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkException;
@@ -26,10 +25,10 @@ public class JCAExecutor implements WorkExecutor{
 
     private ConnectionRequestInfo connectionRequestInfo;
     private Connection genericManagedConnection;
-    private PrintWriter out;
+    private LogWriter out;
     private ConnectionFactory gmcf;
 
-    public JCAExecutor(PrintWriter out,Connection genericManagedConnection,ConnectionFactory gmcf, ConnectionRequestInfo connectionRequestInfo) {
+    public JCAExecutor(LogWriter out,Connection genericManagedConnection,ConnectionFactory gmcf, ConnectionRequestInfo connectionRequestInfo) {
         this.out = out;
         out.println("#JCAWorkExecutor " + connectionRequestInfo + " " + toString());
         this.genericManagedConnection = genericManagedConnection;

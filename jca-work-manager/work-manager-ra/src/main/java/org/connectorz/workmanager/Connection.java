@@ -31,13 +31,14 @@ public class Connection
         implements ManagedConnection {
 
     private ConnectionFactory mcf;
+    private LogWriter log;
     private PrintWriter out;
     private JCAExecutor executorConnection;
     private ConnectionRequestInfo connectionRequestInfo;
     private List<ConnectionEventListener> listeners;
 
-    Connection(PrintWriter out,ConnectionFactory mcf, ConnectionRequestInfo connectionRequestInfo) {
-        this.out = out;
+    Connection(LogWriter out,ConnectionFactory mcf, ConnectionRequestInfo connectionRequestInfo) {
+        this.log = out;
         out.println("#Connection");
         this.mcf = mcf;
         this.connectionRequestInfo = connectionRequestInfo;
@@ -47,44 +48,44 @@ public class Connection
     @Override
     public Object getConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
-        out.println("#Connection.getConnection");
-        executorConnection = new JCAExecutor(out,this,mcf, connectionRequestInfo);
+        log.println("#Connection.getConnection");
+        executorConnection = new JCAExecutor(log,this,mcf, connectionRequestInfo);
         return executorConnection;
     }
 
     @Override
     public void destroy() {
-        out.println("#Connection.destroy");
+        log.println("#Connection.destroy");
     }
 
     @Override
     public void cleanup() {
-        out.println("#Connection.cleanup");
+        log.println("#Connection.cleanup");
     }
 
     @Override
     public void associateConnection(Object connection) {
-        out.println("#Connection.associateConnection " + connection);
+        log.println("#Connection.associateConnection " + connection);
         this.executorConnection = (JCAExecutor) connection;
 
     }
 
     @Override
     public void addConnectionEventListener(ConnectionEventListener listener) {
-        out.println("#Connection.addConnectionEventListener");
+        log.println("#Connection.addConnectionEventListener");
         this.listeners.add(listener);
     }
 
     @Override
     public void removeConnectionEventListener(ConnectionEventListener listener) {
-        out.println("#Connection.removeConnectionEventListener");
+        log.println("#Connection.removeConnectionEventListener");
         this.listeners.remove(listener);
     }
 
     @Override
     public XAResource getXAResource()
             throws ResourceException {
-        out.println("#Connection.getXAResource");
+        log.println("#Connection.getXAResource");
         return null;
     }
 
@@ -93,26 +94,26 @@ public class Connection
     @Override
     public ManagedConnectionMetaData getMetaData()
             throws ResourceException {
-        out.println("#Connection.getMetaData");
+        log.println("#Connection.getMetaData");
         return new ManagedConnectionMetaData() {
 
             public String getEISProductName()
                     throws ResourceException {
-                out.println("#Connection.getEISProductName");
+                log.println("#Connection.getEISProductName");
                 return "Work Manager JCA";
             }
 
             @Override
             public String getEISProductVersion()
                     throws ResourceException {
-                out.println("#Connection.getEISProductVersion");
+                log.println("#Connection.getEISProductVersion");
                 return "1.0";
             }
 
             @Override
             public int getMaxConnections()
                     throws ResourceException {
-                out.println("#Connection.getMaxConnections");
+                log.println("#Connection.getMaxConnections");
                 return mcf.getMaxNumberOfConcurrentRequests();
             }
 

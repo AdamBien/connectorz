@@ -15,7 +15,6 @@ limitations under the License.
 */
 package org.connectorz.workmanager;
 
-import java.io.PrintWriter;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -29,9 +28,9 @@ public class JCAExecutorFactory
     private ManagedConnectionFactory mcf;
     private Reference reference;
     private ConnectionManager cm;
-    private PrintWriter out;
+    private LogWriter out;
 
-    public JCAExecutorFactory(PrintWriter out,ManagedConnectionFactory mcf, ConnectionManager cm) {
+    public JCAExecutorFactory(LogWriter out,ManagedConnectionFactory mcf, ConnectionManager cm) {
         out.println("#WorkManagerExecutorFactory");
         this.mcf = mcf;
         this.cm = cm;
