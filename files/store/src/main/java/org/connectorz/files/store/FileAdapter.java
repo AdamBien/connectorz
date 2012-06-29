@@ -15,8 +15,11 @@ limitations under the License.
 */
 package org.connectorz.files.store;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.*;
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.Connector;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.TransactionSupport;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
@@ -28,33 +31,24 @@ import javax.transaction.xa.XAResource;
 transactionSupport = TransactionSupport.TransactionSupportLevel.LocalTransaction)
 public class FileAdapter implements ResourceAdapter {
 
-
-    public void start(BootstrapContext bc) throws ResourceAdapterInternalException {
+    @Override
+    public void start(BootstrapContext bc) {
     }
 
+    @Override
     public void stop() {
     }
 
-    public void endpointActivation(MessageEndpointFactory mef, ActivationSpec as) throws ResourceException {
+    @Override
+    public void endpointActivation(MessageEndpointFactory mef, ActivationSpec as) {
     }
 
+    @Override
     public void endpointDeactivation(MessageEndpointFactory mef, ActivationSpec as) {
     }
 
-    public XAResource[] getXAResources(ActivationSpec[] ass) throws ResourceException {
+    @Override
+    public XAResource[] getXAResources(ActivationSpec[] ass) {
         return null;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    
-    
 }
