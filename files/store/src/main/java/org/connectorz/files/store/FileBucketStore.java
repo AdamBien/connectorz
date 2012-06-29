@@ -15,13 +15,13 @@ limitations under the License.
 */
 package org.connectorz.files.store;
 
-import org.connectorz.files.BucketStore;
 import java.io.PrintWriter;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnectionFactory;
+import org.connectorz.files.BucketStore;
 
 public class FileBucketStore
         implements BucketStore {
@@ -70,7 +70,6 @@ public class FileBucketStore
             public int hashCode() {
                 return 1;
             }
-
         };
     }
 }

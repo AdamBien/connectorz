@@ -16,7 +16,6 @@ limitations under the License.
 package org.connectorz.files.store;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
