@@ -1,0 +1,111 @@
+/*
+Copyright 2012 Adam Bien, adam-bien.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+package org.connectorz.files.store;
+
+import org.connectorz.files.BucketStore;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
+import javax.resource.ResourceException;
+import javax.resource.spi.*;
+import javax.security.auth.Subject;
+import javax.validation.constraints.Min;
+import org.connectorz.files.Bucket;
+
+@ConnectionDefinition(connectionFactory = BucketStore.class,
+   connectionFactoryImpl = FileBucketStore.class,
+   connection = Bucket.class,
+   connectionImpl = FileBucket.class)
+public class GenericManagedConnectionFactory
+        implements ManagedConnectionFactory, Serializable {
+
+    private PrintWriter out;
+    private String rootDirectory;
+
+    public GenericManagedConnectionFactory() {
+        out = new PrintWriter(System.out);
+        out.println("#GenericManagedConnectionFactory.constructor");
+    }
+
+    @Min(1)
+    @ConfigProperty(defaultValue = "./store/", supportsDynamicUpdates = true, description = "The root folder of the file store")
+    public void setRootDirectory(String rootDirectory) {
+        out.println("#FileBucket.setRootDirectory: " + rootDirectory);
+        this.rootDirectory = rootDirectory;
+    }
+
+    public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
+        out.println("#GenericManagedConnectionFactory.createConnectionFactory,1");
+        return new FileBucketStore(out,this, cxManager);
+    }
+
+    public Object createConnectionFactory() throws ResourceException {
+        out.println("#GenericManagedConnectionFactory.createManagedFactory,2");
+        return new FileBucketStore(out,this, null);
+    }
+
+    public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo info) {
+        out.println("#GenericManagedConnectionFactory.createManagedConnection");
+        return new GenericManagedConnection(out,this.rootDirectory,this, info);
+    }
+
+    public ManagedConnection matchManagedConnections(Set connectionSet, Subject subject, ConnectionRequestInfo info)
+            throws ResourceException {
+        out.println("#GenericManagedConnectionFactory.matchManagedConnections Subject " + subject + " Info: " +  info);
+        for (Iterator it = connectionSet.iterator(); it.hasNext();) {
+            GenericManagedConnection gmc = (GenericManagedConnection) it.next();
+            ConnectionRequestInfo connectionRequestInfo = gmc.getConnectionRequestInfo();
+            if((info == null) || connectionRequestInfo.equals(info))
+                return gmc;
+        }
+        throw new ResourceException("Cannot find connection for info!");
+    }
+
+    public void setLogWriter(PrintWriter out) throws ResourceException {
+        out.println("#GenericManagedConnectionFactory.setLogWriter");
+        this.out = out;
+    }
+
+    public PrintWriter getLogWriter() throws ResourceException {
+        out.println("#GenericManagedConnectionFactory.getLogWriter");
+        return this.out;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GenericManagedConnectionFactory other = (GenericManagedConnectionFactory) obj;
+        if (!Objects.equals(this.rootDirectory, other.rootDirectory)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 71 * hash + Objects.hashCode(this.rootDirectory);
+        return hash;
+    }
+
+}
