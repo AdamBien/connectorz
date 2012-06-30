@@ -134,6 +134,7 @@ public class GenericManagedConnection
         this.out = out;
     }
 
+    @Override
     public PrintWriter getLogWriter()
             throws ResourceException {
         System.out.println("#GenericManagedConnection.getLogWriter");
@@ -141,7 +142,7 @@ public class GenericManagedConnection
     }
 
 
-    public ConnectionRequestInfo getConnectionRequestInfo() {
+    ConnectionRequestInfo getConnectionRequestInfo() {
         return connectionRequestInfo;
     }
 
