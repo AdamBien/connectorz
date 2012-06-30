@@ -22,8 +22,10 @@ package org.connectorz.files;
  */
 public interface Bucket extends AutoCloseable{
 
-    public void write(String file,byte[] content);
-    public void delete(String file);
-    public byte[] fetch(String file);
+    void write(String file,byte[] content);
+    void delete(String file);
+    byte[] fetch(String file);
+    @Override
+    void close();
 
 }
