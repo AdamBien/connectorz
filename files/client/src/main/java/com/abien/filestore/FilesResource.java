@@ -18,30 +18,33 @@ import org.connectorz.files.BucketStore;
 @Consumes(MediaType.TEXT_PLAIN)
 @Produces(MediaType.TEXT_PLAIN)
 public class FilesResource {
-    
-    @Resource(name="jca/files")
+
+    @Resource(name = "jca/files")
     BucketStore bucketStore;
-    
+
     @PUT
     @Path("{id}")
-    public Response put(@PathParam("id") String id,String content){
-        Bucket bucket = bucketStore.getBucket();
-        bucket.write(id,content.getBytes());
+    public Response put(@PathParam("id") String id, String content) {
+        try (Bucket bucket = bucketStore.getBucket();) {
+            bucket.write(id, content.getBytes());
+        }
         URI createdURI = URI.create(id);
         return Response.created(createdURI).build();
     }
-    
+
     @GET
     @Path("{id}")
-    public String fetch(@PathParam("id") String id){
-        Bucket bucket = bucketStore.getBucket();
-        return new String(bucket.fetch(id));
+    public String fetch(@PathParam("id") String id) {
+        try (Bucket bucket = bucketStore.getBucket();) {
+            return new String(bucket.fetch(id));
+        }
     }
 
     @DELETE
     @Path("{id}")
-    public void delete(@PathParam("id") String id){
-        Bucket bucket = bucketStore.getBucket();
-        bucket.delete(id);
+    public void delete(@PathParam("id") String id) {
+        try (Bucket bucket = bucketStore.getBucket();) {
+            bucket.delete(id);
+        }
     }
 }
