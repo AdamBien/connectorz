@@ -120,7 +120,8 @@ public class FileBucket implements Bucket {
         if (entry == null) {
             try {
                 entry = readFromFile(getAbsoluteName(file));
-                this.txCache.put(file, entry);
+                if(entry != null)
+                    this.txCache.put(file, entry);
             } catch (IOException ex) {
                 throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file), ex);
             }

@@ -7,6 +7,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -30,6 +32,20 @@ public class FileBucketTest {
             bucket.begin();
         }
         verify(this.closeable).close();
+    }
+    
+    @Test
+    public void writeAndRollback() throws Exception{
+        final String key = "hey";
+        this.cut.begin();
+        final byte[] content = "duke".getBytes();
+        this.cut.write(key, content);
+        byte[] actual = this.cut.fetch(key);
+        assertThat(actual,is(content));
+        this.cut.rollback();
+        actual = this.cut.fetch(key);
+        assertNull(actual);
+    
     }
 
     @After
