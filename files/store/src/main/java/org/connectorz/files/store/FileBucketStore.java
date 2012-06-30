@@ -32,7 +32,7 @@ public class FileBucketStore
     private PrintWriter out;
 
     public FileBucketStore(PrintWriter out,ManagedConnectionFactory mcf, ConnectionManager cm) {
-        out.println("#FileDataSource");
+        out.println("#FileBucketStore");
         this.mcf = mcf;
         this.cm = cm;
         this.out = out;
@@ -40,7 +40,7 @@ public class FileBucketStore
 
     @Override
     public FileBucket getBucket(){
-        out.println("#FileDataSource.getConnection " + this.cm + " MCF: " + this.mcf);
+        out.println("#FileBucketStore.getConnection " + this.cm + " MCF: " + this.mcf);
         try {
             return (FileBucket) cm.allocateConnection(mcf, getConnectionRequestInfo());
         } catch (ResourceException ex) {

@@ -49,26 +49,30 @@ public class GenericManagedConnectionFactory
         this.rootDirectory = rootDirectory;
     }
 
+    @Override
     public Object createConnectionFactory(ConnectionManager cxManager) throws ResourceException {
         out.println("#GenericManagedConnectionFactory.createConnectionFactory,1");
         return new FileBucketStore(out,this, cxManager);
     }
 
+    @Override
     public Object createConnectionFactory() throws ResourceException {
         out.println("#GenericManagedConnectionFactory.createManagedFactory,2");
         return new FileBucketStore(out,this, null);
     }
 
+    @Override
     public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo info) {
         out.println("#GenericManagedConnectionFactory.createManagedConnection");
         return new GenericManagedConnection(out,this.rootDirectory,this, info);
     }
 
+    @Override
     public ManagedConnection matchManagedConnections(Set connectionSet, Subject subject, ConnectionRequestInfo info)
             throws ResourceException {
         out.println("#GenericManagedConnectionFactory.matchManagedConnections Subject " + subject + " Info: " +  info);
-        for (Iterator it = connectionSet.iterator(); it.hasNext();) {
-            GenericManagedConnection gmc = (GenericManagedConnection) it.next();
+        for (Object con : connectionSet) {
+            GenericManagedConnection gmc = (GenericManagedConnection) con;
             ConnectionRequestInfo connectionRequestInfo = gmc.getConnectionRequestInfo();
             if((info == null) || connectionRequestInfo.equals(info))
                 return gmc;
@@ -76,11 +80,13 @@ public class GenericManagedConnectionFactory
         throw new ResourceException("Cannot find connection for info!");
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) throws ResourceException {
         out.println("#GenericManagedConnectionFactory.setLogWriter");
         this.out = out;
     }
 
+    @Override
     public PrintWriter getLogWriter() throws ResourceException {
         out.println("#GenericManagedConnectionFactory.getLogWriter");
         return this.out;
