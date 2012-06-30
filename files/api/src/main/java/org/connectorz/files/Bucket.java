@@ -20,7 +20,7 @@ package org.connectorz.files;
  *
  * @author adam-bien.com
  */
-public interface Bucket {
+public interface Bucket extends AutoCloseable{
 
     public void write(String file,byte[] content);
     public void delete(String file);
