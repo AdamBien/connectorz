@@ -25,32 +25,25 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.resource.ResourceException;
-import javax.resource.spi.ConnectionRequestInfo;
-import javax.resource.spi.LocalTransaction;
 import org.connectorz.files.Bucket;
 
-public class FileBucket implements Bucket, LocalTransaction {
+public class FileBucket implements Bucket {
 
-    private ConnectionRequestInfo connectionRequestInfo;
     private String rootDirectory;
     private ConcurrentHashMap<String, byte[]> txCache;
     private Set<String> deletedFiles;
-    private GenericManagedConnection genericManagedConnection;
+    private Closeable closeable;
     private PrintWriter out;
 
-    public FileBucket(PrintWriter out, String rootDirectory, GenericManagedConnection genericManagedConnection, ConnectionRequestInfo connectionRequestInfo) {
+    public FileBucket(PrintWriter out, String rootDirectory, Closeable closeable) {
         this.out = out;
         this.rootDirectory = rootDirectory;
-        out.println("#FileBucket " + connectionRequestInfo + " " + toString());
-        this.genericManagedConnection = genericManagedConnection;
-        this.connectionRequestInfo = connectionRequestInfo;
+        out.println("#FileBucket " + toString());
+        this.closeable = closeable;
         this.txCache = new ConcurrentHashMap<>();
         this.deletedFiles = new ConcurrentSkipListSet<>();
     }
 
-    private void initialize() {
-        createIfNotExists(this.rootDirectory);
-    }
 
     void createIfNotExists(String folderName) {
         File file = new File(folderName);
@@ -67,17 +60,11 @@ public class FileBucket implements Bucket, LocalTransaction {
         txCache.put(fileName, content);
     }
 
-    void close() {
-        this.genericManagedConnection.close();
-    }
-
-    @Override
     public void begin() throws ResourceException {
         out.println("#FileBucket.begin " + toString());
-        this.initialize();
+        this.createIfNotExists(this.rootDirectory);
     }
 
-    @Override
     public void commit() throws ResourceException {
         out.println("#FileBucket.commit " + toString());
         try {
@@ -88,15 +75,14 @@ public class FileBucket implements Bucket, LocalTransaction {
         flushChanges();
     }
 
-    @Override
     public void rollback() throws ResourceException {
         out.println("#FileBucket.rollback  " + toString());
-        this.txCache.clear();
+        this.clear();
     }
 
     public void destroy() {
         out.println("#FileBucket.cleanup");
-        this.txCache.clear();
+        this.clear();
     }
 
     private void flushChanges() throws ResourceException {
@@ -121,9 +107,7 @@ public class FileBucket implements Bucket, LocalTransaction {
             fileOutputStream.flush();
         } catch (IOException ex) {
             throw new ResourceException(ex);
-        } finally {
-            this.close();
-        }
+        } 
     }
 
     String getAbsoluteName(String fileName) {
@@ -166,30 +150,20 @@ public class FileBucket implements Bucket, LocalTransaction {
         this.deletedFiles.add(file);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final FileBucket other = (FileBucket) obj;
-        if (this.connectionRequestInfo != other.connectionRequestInfo && (this.connectionRequestInfo == null || !this.connectionRequestInfo.equals(other.connectionRequestInfo))) {
-            return false;
-        }
-        return true;
-    }
+
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 29 * hash + (this.connectionRequestInfo != null ? this.connectionRequestInfo.hashCode() : 0);
-        return hash;
+    public void close() throws Exception {
+        this.closeable.close();
+    }
+
+    private void clear() {
+        this.txCache.clear();
+        this.deletedFiles.clear();
     }
 
     @Override
     public String toString() {
-        return "FileBucket{" + "connectionRequestInfo=" + connectionRequestInfo + ", rootDirectory=" + rootDirectory + ", txCache=" + txCache + ", genericManagedConnection=" + genericManagedConnection + '}';
+        return "FileBucket{" +  "rootDirectory=" + rootDirectory + ", txCache=" + txCache + ", genericManagedConnection=" + closeable + '}';
     }
 }
