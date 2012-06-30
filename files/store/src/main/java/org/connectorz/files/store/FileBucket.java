@@ -159,7 +159,7 @@ public class FileBucket implements Bucket {
         this.closeable.close();
     }
 
-    private void clear() {
+    public void clear() {
         this.txCache.clear();
         this.deletedFiles.clear();
     }

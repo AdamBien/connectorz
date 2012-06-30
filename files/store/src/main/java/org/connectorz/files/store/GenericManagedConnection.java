@@ -42,13 +42,13 @@ public class GenericManagedConnection
         this.mcf = mcf;
         this.connectionRequestInfo = connectionRequestInfo;
         this.listeners = new LinkedList<>();
+        this.fileConnection = new FileBucket(out,this.rootDirectory,this);
     }
 
     @Override
     public Object getConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
         out.println("#GenericManagedConnection.getConnection");
-        fileConnection = new FileBucket(out,this.rootDirectory,this);
         return fileConnection;
     }
 
@@ -61,6 +61,7 @@ public class GenericManagedConnection
     @Override
     public void cleanup() {
         out.println("#GenericManagedConnection.cleanup");
+        this.fileConnection.clear();
     }
 
     @Override
