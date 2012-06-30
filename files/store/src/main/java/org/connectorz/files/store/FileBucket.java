@@ -151,12 +151,13 @@ public class FileBucket implements Bucket {
         this.txCache.remove(file);
         this.deletedFiles.add(file);
     }
-
-
-
     @Override
-    public void close() throws Exception {
-        this.closeable.close();
+    public void close() {
+        try {
+            this.closeable.close();
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot close GenericManagedConnection",ex);
+        }
     }
 
     public void clear() {
