@@ -136,6 +136,7 @@ public class FileBucket implements Bucket, LocalTransaction {
         if (entry == null) {
             try {
                 entry = readFromFile(getAbsoluteName(file));
+                this.txCache.put(file, entry);
             } catch (IOException ex) {
                 throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file), ex);
             }
