@@ -1,18 +1,18 @@
 /*
-Copyright 2012 Adam Bien, adam-bien.com
+ Copyright 2012 Adam Bien, adam-bien.com
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package org.connectorz.files.store;
 
 import java.io.*;
@@ -62,18 +62,13 @@ public class FileBucket implements Bucket, LocalTransaction {
     }
 
     @Override
-    public void write(String fileName,byte[] content) {
+    public void write(String fileName, byte[] content) {
         out.println("#FileBucket.write " + fileName + " " + content);
         txCache.put(fileName, content);
     }
 
     void close() {
         this.genericManagedConnection.close();
-    }
-
-    public void destroy() {
-        out.println("#FileBucket.cleanup");
-        this.txCache.clear();
     }
 
     @Override
@@ -88,11 +83,22 @@ public class FileBucket implements Bucket, LocalTransaction {
         try {
             processDeletions();
         } catch (IOException ex) {
-            throw new IllegalStateException("Cannot delete files: " +ex ,ex);
+            throw new IllegalStateException("Cannot delete files: " + ex, ex);
         }
         flushChanges();
     }
-  
+
+    @Override
+    public void rollback() throws ResourceException {
+        out.println("#FileBucket.rollback  " + toString());
+        this.txCache.clear();
+    }
+
+    public void destroy() {
+        out.println("#FileBucket.cleanup");
+        this.txCache.clear();
+    }
+
     private void flushChanges() throws ResourceException {
         Set<Entry<String, byte[]>> txSet = this.txCache.entrySet();
         for (Entry<String, byte[]> entry : txSet) {
@@ -102,32 +108,61 @@ public class FileBucket implements Bucket, LocalTransaction {
             this.txCache.remove(fileName);
         }
     }
-    
+
     void processDeletions() throws IOException {
         for (String fileName : deletedFiles) {
             deleteFile(getAbsoluteName(fileName));
         }
     }
 
-    void writeFile(String fileName,byte[] content) throws ResourceException{
+    void writeFile(String fileName, byte[] content) throws ResourceException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(getAbsoluteName(fileName), true)) {
-                fileOutputStream.write(content);
-                fileOutputStream.flush();
+            fileOutputStream.write(content);
+            fileOutputStream.flush();
         } catch (IOException ex) {
             throw new ResourceException(ex);
         } finally {
             this.close();
         }
-    }  
-    
-    String getAbsoluteName(String fileName){
+    }
+
+    String getAbsoluteName(String fileName) {
         return this.rootDirectory + fileName;
     }
 
     @Override
-    public void rollback() throws ResourceException {
-        out.println("#FileBucket.rollback  " + toString());
-        this.txCache.clear();
+    public byte[] fetch(String file) {
+        byte[] entry = this.txCache.get(file);
+        if (entry == null) {
+            try {
+                entry = readFromFile(getAbsoluteName(file));
+            } catch (IOException ex) {
+                throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file), ex);
+            }
+        }
+        return entry;
+    }
+
+    byte[] readFromFile(String fileName) throws IOException {
+        Path file = Paths.get(fileName);
+        if (!Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
+            return null;
+        }
+        return Files.readAllBytes(file);
+    }
+
+    void deleteFile(String absoluteName) throws IOException {
+        Path file = Paths.get(absoluteName);
+        if (!Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
+            return;
+        }
+        Files.deleteIfExists(file);
+    }
+
+    @Override
+    public void delete(String file) {
+        this.txCache.remove(file);
+        this.deletedFiles.add(file);
     }
 
     @Override
@@ -145,43 +180,6 @@ public class FileBucket implements Bucket, LocalTransaction {
         return true;
     }
 
-    
-    
-    @Override
-    public byte[] fetch(String file) {
-        byte[] entry = this.txCache.get(file);
-        if(entry==null){
-            try {
-                entry = readFromFile(getAbsoluteName(file));
-            } catch (IOException ex) {
-                throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file),ex);
-            }
-        }
-        return entry;
-    }
-    
-    
-    byte[] readFromFile(String fileName) throws IOException{
-        Path file = Paths.get(fileName);
-        if(!Files.exists(file, LinkOption.NOFOLLOW_LINKS)){
-            return null;
-        }
-        return Files.readAllBytes(file);
-    }
-
-    void deleteFile(String absoluteName) throws IOException {
-        Path file = Paths.get(absoluteName);
-        if(!Files.exists(file, LinkOption.NOFOLLOW_LINKS))
-            return;
-        Files.deleteIfExists(file);
-    }
-
-    @Override
-    public void delete(String file) {
-        this.txCache.remove(file);
-        this.deletedFiles.add(file);
-    }
-
     @Override
     public int hashCode() {
         int hash = 5;
@@ -193,5 +191,4 @@ public class FileBucket implements Bucket, LocalTransaction {
     public String toString() {
         return "FileBucket{" + "connectionRequestInfo=" + connectionRequestInfo + ", rootDirectory=" + rootDirectory + ", txCache=" + txCache + ", genericManagedConnection=" + genericManagedConnection + '}';
     }
-
 }
