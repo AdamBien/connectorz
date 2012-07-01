@@ -77,6 +77,7 @@
                 <version>2.12</version>
             </plugin>
         </plugins>
+        <finalName>jca-file-client</finalName>
     </build>
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
