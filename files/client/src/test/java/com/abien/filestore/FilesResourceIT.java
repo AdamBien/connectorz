@@ -22,7 +22,7 @@ public class FilesResourceIT {
     @Before
     public void init(){
         this.client = Client.create();
-        this.files = this.client.resource("http://localhost:8080/jca-test-client/v1/").path("files");
+        this.files = this.client.resource("http://localhost:8080/jca-file-client/v1/").path("files");
         
     }
 
