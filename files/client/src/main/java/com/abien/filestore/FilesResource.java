@@ -36,7 +36,10 @@ public class FilesResource {
     @Path("{id}")
     public String fetch(@PathParam("id") String id) {
         try (Bucket bucket = bucketStore.getBucket();) {
-            return new String(bucket.fetch(id));
+            final byte[] content = bucket.fetch(id);
+            if(content == null)
+                return null;
+            return new String(content);
         }
     }
 
