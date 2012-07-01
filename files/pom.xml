@@ -18,6 +18,12 @@
             <version>3.1.2</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <name>JCA File 1.6 Connector</name>
     <build>
