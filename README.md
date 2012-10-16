@@ -4,6 +4,7 @@
 JCA 1.6 Connectors. As Simple As Possible.
 
 1. [Work Manager](http://connectorz.adam-bien.com): JCA implementation of java.util.concurrent.Executor
+2. [File Store] (http://connectorz.adam-bien.com): JCA implementation of transactional file access.
 
 
 Copyright 2012 Adam Bien, adam-bien.com
