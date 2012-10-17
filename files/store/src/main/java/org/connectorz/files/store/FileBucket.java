@@ -60,6 +60,13 @@ public class FileBucket implements Bucket {
         txCache.put(fileName, content);
     }
 
+    private byte[] concat(byte[] a, byte[] b) {
+        final byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
     public void begin() throws ResourceException {
         out.println("#FileBucket.begin " + toString());
         this.createIfNotExists(this.rootDirectory);
@@ -116,18 +123,21 @@ public class FileBucket implements Bucket {
 
     @Override
     public byte[] fetch(String file) {
-        byte[] entry = this.txCache.get(file);
-        if (entry == null) {
-            try {
-                entry = readFromFile(getAbsoluteName(file));
-                if(entry != null) {
-                    this.txCache.put(file, entry);
+        try {
+            final byte[] fileContent = readFromFile(getAbsoluteName(file));
+            final byte[] txContent = this.txCache.get(file);
+            if (fileContent == null) {
+                return txContent;
+            } else {
+                if (txContent == null) {
+                    return fileContent;
+                } else {
+                    return concat(fileContent, txContent);
                 }
-            } catch (IOException ex) {
-                throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file), ex);
             }
+        } catch (IOException ex) {
+            throw new IllegalStateException("Cannot access file: " + getAbsoluteName(file), ex);
         }
-        return entry;
     }
 
     byte[] readFromFile(String fileName) throws IOException {

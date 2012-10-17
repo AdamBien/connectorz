@@ -81,4 +81,25 @@ public class FileBucketTest {
         actual = this.cut.fetch(key);
         assertNull(actual);
     }
+
+    @Test
+    public void fetchInTransactionShouldNotTriggerWriteOnCommit() throws Exception {
+        final String key = "fetch";
+
+        // given
+        final byte[] existingContent = "hello".getBytes();
+        this.cut.begin();
+        this.cut.write(key, existingContent);
+        this.cut.commit();
+
+        // when
+        this.cut.begin();
+        this.cut.fetch(key);
+        this.cut.commit();
+
+        // then
+        final byte[] actual = this.cut.fetch(key);
+        System.out.println(new String(actual));
+        assertThat(actual, is(existingContent));
+    }
 }
