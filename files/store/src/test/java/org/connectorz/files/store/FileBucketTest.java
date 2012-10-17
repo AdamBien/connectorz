@@ -3,9 +3,10 @@ package org.connectorz.files.store;
 import java.io.Closeable;
 import java.io.File;
 import java.io.PrintWriter;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -17,17 +18,21 @@ import static org.junit.Assert.*;
 public class FileBucketTest {
 
     FileBucket cut;
-    String directory = "./current";
     Closeable closeable;
+
+    @Rule
+    public TemporaryFolder root = new TemporaryFolder();
 
     @Before
     public void initialize() {
+        final String directory = root.getRoot().getAbsolutePath();
         this.closeable = mock(Closeable.class);
         this.cut = new FileBucket(new PrintWriter(System.out), directory, this.closeable);
     }
 
     @Test
     public void autoClose() throws Exception {
+        final String directory = root.getRoot().getAbsolutePath();
         try (FileBucket bucket = new FileBucket(new PrintWriter(System.out), directory, this.closeable);) {
             bucket.begin();
         }
@@ -75,10 +80,5 @@ public class FileBucketTest {
         this.cut.commit();
         actual = this.cut.fetch(key);
         assertNull(actual);
-    }
-
-    @After
-    public void cleanup() {
-        new File(directory).delete();
     }
 }
