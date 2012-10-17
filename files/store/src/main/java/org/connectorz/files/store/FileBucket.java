@@ -57,7 +57,19 @@ public class FileBucket implements Bucket {
     @Override
     public void write(String fileName, byte[] content) {
         out.println("#FileBucket.write " + fileName + " " + content);
-        txCache.put(fileName, content);
+        final byte[] existingContent = this.txCache.get(fileName);
+        if (existingContent == null) {
+             this.txCache.put(fileName, content);
+        } else {
+            this.txCache.put(fileName, concat(existingContent, content));
+        }
+    }
+
+    private byte[] concat(byte[] a, byte[] b) {
+        final byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
     }
 
     public void begin() throws ResourceException {
