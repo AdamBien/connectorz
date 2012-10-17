@@ -99,7 +99,6 @@ public class FileBucketTest {
 
         // then
         final byte[] actual = this.cut.fetch(key);
-        System.out.println(new String(actual));
         assertThat(actual, is(existingContent));
     }
 }
