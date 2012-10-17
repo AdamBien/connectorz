@@ -1,2 +1,7 @@
 target/
 .DS_Store
+
+# eclipse
+.project
+.classpath
+.settings
