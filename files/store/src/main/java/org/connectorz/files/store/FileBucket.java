@@ -72,13 +72,6 @@ public class FileBucket implements Bucket {
         return result;
     }
 
-    private byte[] concat(byte[] a, byte[] b) {
-        final byte[] result = new byte[a.length + b.length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
-
     public void begin() throws ResourceException {
         out.println("#FileBucket.begin " + toString());
         this.createIfNotExists(this.rootDirectory);
