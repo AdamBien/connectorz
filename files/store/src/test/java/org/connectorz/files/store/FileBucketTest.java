@@ -83,19 +83,22 @@ public class FileBucketTest {
     }
 
     @Test
-    public void writeMultipleTimes() throws Exception {
-        final String key = "multiWrite";
+    public void fetchInTransactionShouldNotTriggerWriteOnCommit() throws Exception {
+        final String key = "fetch";
 
+        // given
+        final byte[] existingContent = "hello".getBytes();
         this.cut.begin();
-        final byte[] firstEntry = "hello ".getBytes();
-        this.cut.write(key, firstEntry);
-
-        final byte[] secondEntry = "world!".getBytes();
-        this.cut.write(key, secondEntry);
+        this.cut.write(key, existingContent);
         this.cut.commit();
 
-        final byte[] actual = this.cut.fetch(key);
-        assertThat(actual, is("hello world!".getBytes()));
-    }
+        // when
+        this.cut.begin();
+        this.cut.fetch(key);
+        this.cut.commit();
 
+        // then
+        final byte[] actual = this.cut.fetch(key);
+        assertThat(actual, is(existingContent));
+    }
 }
