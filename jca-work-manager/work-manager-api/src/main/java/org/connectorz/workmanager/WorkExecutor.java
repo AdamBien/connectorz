@@ -16,6 +16,7 @@ limitations under the License.
 package org.connectorz.workmanager;
 
 import java.util.concurrent.Executor;
+import javax.resource.spi.work.Work;
 
 /**
  * Sample usage:
@@ -42,6 +43,14 @@ public class ThreadsResource {
  * @author adam bien, adam-bien.com
  */
 public interface WorkExecutor extends Executor,AutoCloseable{
+
+	/**
+	 * executes the given work
+	 * 
+	 * @param work 
+	 */
+	void execute(Work work);
+	
     @Override
     void close();
 }
