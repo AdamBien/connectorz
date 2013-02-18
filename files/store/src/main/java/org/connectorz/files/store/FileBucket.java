@@ -20,10 +20,14 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.resource.ResourceException;
 import org.connectorz.files.Bucket;
 
@@ -145,6 +149,15 @@ public class FileBucket implements Bucket {
         }
     }
 
+	public FileTime lastModified(String file) {
+		try {
+			return Files.getLastModifiedTime(Paths.get(getAbsoluteName(file)));
+		} catch (IOException ex) {
+			throw new IllegalStateException("Cannot access file: "+getAbsoluteName(file), ex);
+		}
+	}	
+
+	
     byte[] readFromFile(String fileName) throws IOException {
         Path file = Paths.get(fileName);
         if (!Files.exists(file, LinkOption.NOFOLLOW_LINKS)) {
