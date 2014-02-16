@@ -25,7 +25,8 @@ import javax.resource.ResourceException;
 import javax.resource.spi.*;
 import javax.resource.spi.work.WorkManager;
 import javax.security.auth.Subject;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 /**
  * @author adam bien, adam-bien.com
  */
@@ -40,7 +41,9 @@ public class ConnectionFactory
     private LogWriter log;
     private PrintWriter out;
     private WorkManagerBootstrap workManagerAdapter;
-    private int maxNumberOfConcurrentRequests;
+    @NotNull
+    @Min(1)
+    private Integer maxNumberOfConcurrentRequests;
     
 
     public ConnectionFactory() {
@@ -48,13 +51,12 @@ public class ConnectionFactory
         log.println("#ConnectionFactory.constructor");
     }
 
-    @Size(min = 1)
     @ConfigProperty(defaultValue = "2", supportsDynamicUpdates = true, description = "Maximum number of concurrent connections from different processes that an EIS instance can supportMaximum number of concurrent connections from different processes that an EIS instance can support")
     public void setMaxNumberOfConcurrentRequests(Integer maxNumberOfConcurrentRequests) {
         this.maxNumberOfConcurrentRequests = maxNumberOfConcurrentRequests;
     }
 
-    public int getMaxNumberOfConcurrentRequests() {
+    public Integer getMaxNumberOfConcurrentRequests() {
         return maxNumberOfConcurrentRequests;
     }
 
