@@ -15,17 +15,24 @@ limitations under the License.
 */
 package org.connectorz.files.store;
 
-import org.connectorz.files.BucketStore;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+
 import javax.resource.ResourceException;
-import javax.resource.spi.*;
+import javax.resource.spi.ConfigProperty;
+import javax.resource.spi.ConnectionDefinition;
+import javax.resource.spi.ConnectionManager;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.Subject;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.connectorz.files.Bucket;
+import org.connectorz.files.BucketStore;
 
 @ConnectionDefinition(connectionFactory = BucketStore.class,
    connectionFactoryImpl = FileBucketStore.class,
@@ -35,6 +42,8 @@ public class GenericManagedConnectionFactory
         implements ManagedConnectionFactory, Serializable {
 
     private PrintWriter out;
+    @NotNull
+    @Size(min = 1)
     private String rootDirectory;
 
     public GenericManagedConnectionFactory() {
@@ -42,7 +51,6 @@ public class GenericManagedConnectionFactory
         out.println("#GenericManagedConnectionFactory.constructor");
     }
 
-    @Min(1)
     @ConfigProperty(defaultValue = "./store/", supportsDynamicUpdates = true, description = "The root folder of the file store")
     public void setRootDirectory(String rootDirectory) {
         out.println("#FileBucket.setRootDirectory: " + rootDirectory);
