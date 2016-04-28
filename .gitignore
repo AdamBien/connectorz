@@ -1,7 +1,17 @@
-target/
-.DS_Store
-
-# eclipse
-.project
 .classpath
+.project
 .settings
+*.class
+target
+version.ini
+.mylyn
+.log
+.lock
+.plugins
+.metadata
+Servers
+.DS_Store
+# Package Files #
+*.jar
+*.war
+*.ear
