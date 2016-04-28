@@ -15,20 +15,31 @@ limitations under the License.
 */
 package org.connectorz.files.store;
 
+import static javax.resource.spi.ConnectionEvent.CONNECTION_CLOSED;
+import static javax.resource.spi.ConnectionEvent.LOCAL_TRANSACTION_COMMITTED;
+import static javax.resource.spi.ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK;
+import static javax.resource.spi.ConnectionEvent.LOCAL_TRANSACTION_STARTED;
+
 import java.io.Closeable;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.resource.ResourceException;
-import static javax.resource.spi.ConnectionEvent.*;
-import javax.resource.spi.*;
+import javax.resource.spi.ConnectionEvent;
+import javax.resource.spi.ConnectionEventListener;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.DissociatableManagedConnection;
+import javax.resource.spi.LocalTransaction;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 
 public class GenericManagedConnection
-        implements ManagedConnection, LocalTransaction,Closeable {
+        implements ManagedConnection, LocalTransaction, Closeable, DissociatableManagedConnection {
 
-    private ManagedConnectionFactory mcf;
     private PrintWriter out;
     private FileBucket fileConnection;
     private ConnectionRequestInfo connectionRequestInfo;
@@ -39,7 +50,6 @@ public class GenericManagedConnection
         this.out = out;
         this.rootDirectory = rootDirectory;
         out.println("#GenericManagedConnection");
-        this.mcf = mcf;
         this.connectionRequestInfo = connectionRequestInfo;
         this.listeners = new LinkedList<>();
         this.fileConnection = new FileBucket(out,this.rootDirectory,this);
@@ -213,5 +223,9 @@ public class GenericManagedConnection
         hash = 83 * hash + (this.connectionRequestInfo != null ? this.connectionRequestInfo.hashCode() : 0);
         return hash;
     }
-    
+
+    @Override
+    public void dissociateConnections() throws ResourceException {
+        fileConnection = null; 
+    }
 }
